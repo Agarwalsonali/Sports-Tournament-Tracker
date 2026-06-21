@@ -1,5 +1,6 @@
 #include "DataStores.h"
 #include "algo.cpp"
+#include "crudOps.cpp"
 #include<iostream>
 using namespace std;
 
@@ -10,7 +11,25 @@ void printMatches(vector<Match>& match) {
     cout << "\n";
 }
 
+void printTeamsTable() {
+    for (const auto& team : teams) {
+        cout << team.name << " (Points: " << team.points << ")\n";
+    }
+}
+
 int main(){
+
+    // Add match result: Match 1, Team 1 vs Team 2 (Score: 3 - 1)
+    addMatchResult(1, 1, 2, 3, 1);
+    
+    // Add match result: Match 2, Team 2 vs Team 3 (Score: 2 - 2)
+    addMatchResult(2, 2, 3, 2, 2);
+
+    cout << "--- Add Match Results ---\n";
+    cout << "Team 1 Points: " << points[1] << " | Goals: " << goals[1] << "\n"; // Expected: 3 pts, 3 goals
+    cout << "Team 2 Points: " << points[2] << " | Goals: " << goals[2] << "\n"; // Expected: 1 pt, 3 goals
+    cout << "Team 3 Points: " << points[3] << " | Goals: " << goals[3] << "\n"; // Expected: 1 pt, 2 goals
+
     teams.push_back({1, "Real Madrid", 15, 12, 4, 5, 0, 1, false});
     teams.push_back({2, "Barcelona",   12, 10, 6, 4, 0, 2, false});
     teams.push_back({3, "Man City",    18, 20, 5, 6, 0, 0, false});
@@ -34,5 +53,41 @@ int main(){
     cout << "\nAfter Dutch National Flag Sorting\n";
     printMatches(matches);
 
+    mergeSortTeams(teams, 0, teams.size() - 1);
+
+    cout << "\n--- Sorted Leaderboard (Merge Sort) ---\n";
+    printTeamsTable();
+
+    teams.clear();
+    // Points equal (12), but GD differs
+    teams.push_back({1, "Chelsea", 12, 8, 6, 4, 0, 2, false});          // GD = +2
+    teams.push_back({2, "Man United", 12, 10, 4, 4, 0, 2, false});        // GD = +6
+    teams.push_back({3, "Liverpool", 18, 15, 3, 6, 0, 0, false});         // Clear Leader
+    teams.push_back({4, "Arsenal", 6, 5, 9, 2, 0, 4, false});
+
+    assignRanks(teams);
+
+    teams.clear();
+    // Add teams out of order by ID
+    teams.push_back({45, "Arsenal", 10, 0, 0, 0, 0, 0, false});
+    teams.push_back({12, "Chelsea", 14, 0, 0, 0, 0, 0, false});
+    teams.push_back({89, "Man City", 18, 0, 0, 0, 0, 0, false});
+    teams.push_back({23, "Liverpool", 7, 0, 0, 0, 0, 0, false});
+
+    int search_id = 23;
+    int index = findTeamById(teams, search_id);
+
+    cout << "--- Binary Search ID Lookup ---\n";
+    if (index != -1) {
+        cout << "Found Team! Name: " << teams[index].name 
+                  << " | ID: " << teams[index].id 
+                  << " | Points: " << teams[index].points << "\n";
+    } else {
+        cout << "Team with ID " << search_id << " not found.\n";
+    }
+
     return 0;
 }
+
+
+

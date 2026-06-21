@@ -6,7 +6,7 @@
 using namespace std;
 
 
-//Top K teams based on points
+//Algorithm #4: Top K Teams based on points
 void topKTeams(vector<Team>& team, int k) {
     priority_queue<pair<int, string>> pq;
 
@@ -27,7 +27,7 @@ void topKTeams(vector<Team>& team, int k) {
 }
 
 
-//Dutch National Flag
+//Algorithm #5: Dutch National Flag
 void dutchNF(vector<Match>& matches) {
     int l=0, h=matches.size()-1;                        //Win, Draw, Loss - l,m,h
     int m=0;
