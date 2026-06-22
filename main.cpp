@@ -17,6 +17,13 @@ void printTeamsTable() {
     }
 }
 
+void printActiveTeams() {
+    for (const auto& team : teams) {
+        cout << team.name << " | Losses: " << team.losses 
+                  << " | Eliminated: " << (team.eliminated ? "Yes" : "No") << "\n";
+    }
+}
+
 int main(){
 
     // Add match result: Match 1, Team 1 vs Team 2 (Score: 3 - 1)
@@ -85,6 +92,67 @@ int main(){
     } else {
         cout << "Team with ID " << search_id << " not found.\n";
     }
+
+
+    teams.clear();
+    
+    teams.push_back({1, "Invincibles FC", 10, 0, 0, 3, 1, 0, false}); // Unbeaten
+    teams.push_back({2, "Relegation United", 2, 0, 0, 0, 2, 5, true}); // Eliminated
+    teams.push_back({3, "Solid Crew FC", 6, 0, 0, 2, 0, 1, false});    // 1 Loss
+    teams.push_back({4, "Lucky Drawers", 4, 0, 0, 0, 4, 0, false});   // Unbeaten
+
+    cout << "\n--- Initial Team List ---\n";
+    printActiveTeams();
+
+    int unbeatenCount = countUnbeaten(teams);
+    cout << "\n Total Unbeaten Teams: " << unbeatenCount <<endl;
+
+    // Test Algorithm #14
+    cout << "\n Removing Eliminated Teams...\n";
+    removeEliminated(teams);
+
+    cout << "\n--- Final Active Team List ---\n";
+    printActiveTeams(); 
+
+    teams.clear();
+    
+    teams.push_back({2, "Team Beta",  10, 20, 18, 0, 0, 0, false}); // GD = +2
+    teams.push_back({1, "Team Alpha", 10, 15, 5, 0, 0, 0, false});  // GD = +10
+    teams.push_back({3, "Team Gamma", 10, 5, 12, 0, 0, 0, false});  // GD = -7
+
+    cout << "\n--- Before Goal Difference Sort ---\n";
+    for (const auto& team : teams) {
+        cout << team.name << " (GD: " << (team.goals_for - team.goals_against) << ")\n";
+    }
+
+    goalDifferenceSort(teams);
+
+    cout << "\n--- After Goal Difference Sort ---\n";
+    for (const auto& team : teams) {
+        cout << team.name << " (GD: " << (team.goals_for - team.goals_against) << ")\n";
+    }
+
+    vector<pair<int, int>> match_slots = {{10, 12}, {11, 13}, {14, 15}, {9, 10}};
+
+    cout << "\n--- Merging Match Schedule Slots ---\n";
+    vector<pair<int, int>> clean_schedule = mergeIntervals(match_slots);
+
+    for (const auto& slot : clean_schedule) {
+        cout << "Occupied Broadcast Window: [" << slot.first << " -> " << slot.second << "]\n";
+    }
+
+
+    teams.clear();
+    
+    teams.push_back({1, "Real Madrid", 12, 14, 5, 4, 0, 1, false});
+    teams.push_back({2, "Man City",    15, 22, 8, 5, 0, 0, false}); // Highest scorer
+    teams.push_back({3, "Bayern",      9,  11, 9, 3, 0, 3, false});
+
+    Team topScorer = highestGoalScorer(teams);
+
+    cout << "\n--- Golden Boot Team Award ---\n";
+    cout << "Highest Scoring Team: " << topScorer.name 
+              << " with " << topScorer.goals_for << " goals scored!\n";
 
     return 0;
 }

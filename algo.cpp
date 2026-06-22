@@ -3,6 +3,7 @@
 #include<queue>
 #include<string>
 #include<utility>
+#include<algorithm>
 using namespace std;
 
 
@@ -27,6 +28,8 @@ void topKTeams(vector<Team>& team, int k) {
 }
 
 
+
+
 //Algorithm #5: Dutch National Flag
 void dutchNF(vector<Match>& matches) {
     int l=0, h=matches.size()-1;                        //Win, Draw, Loss - l,m,h
@@ -47,3 +50,84 @@ void dutchNF(vector<Match>& matches) {
         }
     }
 }
+
+
+
+
+//Algorithm #10: Interval Merging - Match Schedule
+vector<pair<int, int>> mergeIntervals(vector<pair<int, int>>& slots) {
+    if (slots.empty()) return {};
+
+    // Sort intervals by start time
+    sort(slots.begin(), slots.end());
+    
+    vector<pair<int, int>> merged;
+    merged.push_back(slots[0]);
+
+    for (int i = 1; i < slots.size(); i++) {
+      
+        if (slots[i].first <= merged.back().second) {
+            merged.back().second = max(merged.back().second, slots[i].second);
+        } else {
+            merged.push_back(slots[i]);
+        }
+    }
+    return merged; 
+}
+
+
+
+
+//Algiorithm #11: Count Unbeaten Teams
+int countUnbeaten(const vector<Team>& t) {
+    return count_if(t.begin(), t.end(), [](const Team& team) {
+        return team.losses == 0;
+    });
+}
+
+
+
+
+// Custom comparator
+bool compareByGoalDifference(const Team& a, const Team& b) {
+    int gdA = a.goals_for - a.goals_against;
+    int gdB = b.goals_for - b.goals_against;
+    return gdA > gdB; // Descending order of Goal Difference
+}
+
+// Algorithm #12: Goal Difference Sort
+void goalDifferenceSort(vector<Team>& t) {
+    sort(t.begin(), t.end(), compareByGoalDifference);
+}
+
+
+
+
+// Algorithm #13: Highest Goal-Scorer
+Team highestGoalScorer(const vector<Team>& t) {
+    if (t.empty()) {
+        return Team{-1, "None", 0, 0, 0, 0, 0, 0, false};
+    }
+
+    auto it = max_element(t.begin(), t.end(), [](const Team& a, const Team& b) {
+        return a.goals_for < b.goals_for;
+    });
+
+    return *it;
+}
+
+
+
+
+//Algorithm #14: Remove Eliminated Teams
+void removeEliminated(vector<Team>& t) {
+    // Move all eliminated teams to the end of the vector
+    auto it = remove_if(t.begin(), t.end(), [](const Team& team) {
+        return team.eliminated;
+    });
+    
+    // Erase those elements from the vector permanently
+    t.erase(it, t.end());
+}
+
+
