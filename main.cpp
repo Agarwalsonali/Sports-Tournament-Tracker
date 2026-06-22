@@ -154,6 +154,32 @@ int main(){
     cout << "Highest Scoring Team: " << topScorer.name 
               << " with " << topScorer.goals_for << " goals scored!\n";
 
+
+    cout << "\n--- Prefix Sum of Goals ---\n";
+vector<int> prefix = buildPrefixGoals(matches);
+
+for(int x : prefix){
+    cout << x << " ";
+}
+cout << endl;
+
+
+cout << "\n--- Maximum Goal Window (Kadane) ---\n";
+cout << "Maximum Goals = " << maxGoalWindow(matches) << endl;
+
+
+cout << "\n--- Sliding Window Rolling Form ---\n";
+vector<int> formPoints = {3,3,1,0,3,1,3};
+
+cout << "Best Form = "
+     << rollingForm(formPoints, 5)
+     << endl;
+
+
+cout << "\n--- Two Pointer Goal Pairs ---\n";
+vector<int> goalArray = {1,2,3,4,5,6};
+
+findGoalPairs(goalArray, 8);
     return 0;
 }
 
