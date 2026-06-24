@@ -131,3 +131,90 @@ void removeEliminated(vector<Team>& t) {
 }
 
 
+//Algorithm #7: Prefix Sum - Cumulative Goals
+vector<int> buildPrefixGoals(vector<Match>& matches){
+    vector<int> prefix;
+    int sum = 0;
+
+    for(auto m : matches){
+        int totalGoals = m.home_team_goals + m.away_team_goals;
+        sum += totalGoals;
+        prefix.push_back(sum);
+    }
+
+    return prefix;
+}
+
+
+//Algorithm #8: Maximum Goals Window (Kadane)
+int maxGoalWindow(vector<Match>& matches){
+    int maxSum = 0;
+    int currSum = 0;
+
+    for(auto m : matches){
+        int totalGoals = m.home_team_goals + m.away_team_goals;
+
+        currSum += totalGoals;
+
+        if(currSum > maxSum)
+            maxSum = currSum;
+
+        if(currSum < 0)
+            currSum = 0;
+    }
+
+    return maxSum;
+}
+
+
+//Algorithm #9: Sliding Window - Rolling Form
+int rollingForm(vector<int>& formPoints, int k){
+    if(formPoints.size() < k)
+        return -1;
+
+    int sum = 0;
+
+    for(int i=0; i<k; i++){
+        sum += formPoints[i];
+    }
+
+    int maxForm = sum;
+
+    for(int i=k; i<formPoints.size(); i++){
+        sum = sum - formPoints[i-k] + formPoints[i];
+
+        if(sum > maxForm)
+            maxForm = sum;
+    }
+
+    return maxForm;
+}
+
+
+//Algorithm #15: Two Pointer - Match Goal Pairs
+void findGoalPairs(vector<int>& goals, int target){
+    sort(goals.begin(), goals.end());
+
+    int left = 0;
+    int right = goals.size() - 1;
+
+    cout << "\nPairs with sum " << target << ":\n";
+
+    while(left < right){
+        int sum = goals[left] + goals[right];
+
+        if(sum == target){
+            cout << goals[left] << " + "
+                 << goals[right] << endl;
+
+            left++;
+            right--;
+        }
+        else if(sum < target){
+            left++;
+        }
+        else{
+            right--;
+        }
+    }
+}

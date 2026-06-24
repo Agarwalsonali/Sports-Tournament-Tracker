@@ -29,7 +29,7 @@ public:
     int getGoalsAgainst() const { return goals_against; }
     int getGoalDifference() const { return goals_for - goals_against; }
     int getWins() const { return wins; }
-    int getDraws() const { return draws; }  
+    int getDraws() const { return draws; }
     int getLosses() const { return losses; }
     bool isEliminated() const { return eliminated; }
 
