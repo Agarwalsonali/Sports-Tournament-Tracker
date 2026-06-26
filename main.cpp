@@ -1,224 +1,105 @@
 #include "TournamentTracker.h"
-#include<iostream>
+#include <iostream>
+#include <vector>
 using namespace std;
 
-void printMatches(vector<Match>& match) {
-    for (const auto& m : match) {
-        cout << "[Match ID: " << m.getId() << " | Result: " << m.getResult() << "] ";
-    }
-    cout << "\n";
-}
-
-void printTeamsTable(vector<Team>& teams) {
+void printLeaderboardState(const vector<Team>& teams) {
     for (const auto& team : teams) {
-        cout << team.getName() << " (Points: " << team.getPoints() << ")\n";
+        cout << team.getName() << " (Points: " << team.getPoints() 
+                  << ", GD: " << team.getGoalDifference() 
+                  << ", Goals Scored: " << team.getGoalsFor() << ")\n";
     }
 }
 
-void printActiveTeams(vector<Team>& teams) {
-    for (const auto& team : teams) {
-        cout << team.getName() << " | Losses: " << team.getLosses() 
-                  << " | Eliminated: " << (team.isEliminated() ? "Yes" : "No") << "\n";
-    }
-}
-
-int main(){
+int main() {
     TournamentTracker tracker;
 
-    // Add teams first (indexed by ID)
-    tracker.addTeam(0, "Team 1");
-    tracker.addTeam(1, "Team 2");
-    tracker.addTeam(2, "Team 3");
-
-    // Add match result: Match 1, Team 1 vs Team 2 (Score: 3 - 1)
-    tracker.addMatchResult(1, 0, 1, 3, 1);
-    
-    // Add match result: Match 2, Team 2 vs Team 3 (Score: 2 - 2)
-    tracker.addMatchResult(2, 1, 2, 2, 2);
-
-    cout << "--- Add Match Results ---\n";
-    cout << "Match results added successfully\n";
-
-    // Clear and add new teams for testing
-    tracker.getTeams().clear();
-    tracker.addTeam(1, "Real Madrid");
-    tracker.addTeam(2, "Barcelona");
+    // Seed Data Configurations
+    tracker.addTeam(0, "Real Madrid");
+    tracker.addTeam(1, "Barcelona");
+    tracker.addTeam(2, "Liverpool");
     tracker.addTeam(3, "Man City");
-    tracker.addTeam(4, "Bayern Munich");
 
-    // Manually set stats for these teams (since they start at 0)
-    for (auto& t : tracker.getTeams()) {
-        if (t.getId() == 1) t.updateStats(12, 4, 'W');
-        if (t.getId() == 2) t.updateStats(10, 6, 'D');
-        if (t.getId() == 3) t.updateStats(20, 5, 'W');
-        if (t.getId() == 4) t.updateStats(8, 9, 'L');
-    }
+    // Algorithm #1: Add Match Results
+    tracker.addMatchResult(0, 1, 3, 1, 10, 12); 
+    tracker.addMatchResult(2, 3, 2, 2, 11, 13); 
+    tracker.addMatchResult(0, 2, 1, 0, 14, 15); 
+    tracker.addMatchResult(3, 1, 4, 2, 16, 18); 
 
-    tracker.topKTeams(3);
+    cout << "--- Initial Seeding Standings ---\n";
+    printLeaderboardState(tracker.getTeams());
 
-    tracker.getMatches().clear();
-    tracker.getMatches().push_back(Match(101, 1, 2, 2, 1, 0, 90));  // Win
-    tracker.getMatches().push_back(Match(102, 3, 4, 1, 1, 0, 90));  // Draw
-    tracker.getMatches().push_back(Match(103, 5, 6, 0, 3, 0, 90));  // Loss
-    tracker.getMatches().push_back(Match(104, 2, 4, 3, 2, 0, 90));  // Win
-    tracker.getMatches().push_back(Match(105, 1, 5, 0, 0, 0, 90));  // Draw
-    tracker.getMatches().push_back(Match(106, 6, 2, 1, 4, 0, 90));  // Loss
-
-    cout << "Before Dutch National Flag Sorting\n";
-    printMatches(tracker.getMatches());
-
-    tracker.dutchNF();
-
-    cout << "\nAfter Dutch National Flag Sorting\n";
-    printMatches(tracker.getMatches());
-
+    // Algorithm #2: Manual Merge Sort Execution
+    cout << "\n--- Algorithm #2: Manual Merge Sort Execution ---\n";
     tracker.sortStandings();
+    printLeaderboardState(tracker.getTeams());
 
-    cout << "\n--- Sorted Leaderboard (Merge Sort) ---\n";
-    printTeamsTable(tracker.getTeams());
+    // Algorithm #3: Stable Sort Tie-Breaking
+    cout << "\n--- Algorithm #3: Stable Sort Tie-Breaking ---\n";
+    tracker.assignRanksWithTieBreak();
+    printLeaderboardState(tracker.getTeams());
 
-    tracker.getTeams().clear();
-    // Points equal (12), but GD differs
-    tracker.addTeam(1, "Chelsea");
-    tracker.addTeam(2, "Man United");
-    tracker.addTeam(3, "Liverpool");
-    tracker.addTeam(4, "Arsenal");
+    // Algorithm #4: Top-K Teams via Max-Heap
+    cout << "\n--- Algorithm #4: Top-K Teams via Max-Heap ---\n";
+    tracker.printTopK(2);
 
-    // Manually set stats
-    for (auto& t : tracker.getTeams()) {
-        if (t.getId() == 1) t.updateStats(8, 6, 'W');
-        if (t.getId() == 2) t.updateStats(10, 4, 'W');
-        if (t.getId() == 3) t.updateStats(15, 3, 'W');
-        if (t.getId() == 4) t.updateStats(5, 9, 'L');
+    // Algorithm #5: Dutch National Flag
+    cout << "\n--- Algorithm #5: Dutch National Flag ---\n";
+    tracker.categorizeMatchResults();
+
+    // Algorithm #6: Binary Search
+    cout << "\n--- Algorithm #6: Binary Search Check (Targeting Team ID 2) ---\n";
+    int targetIdx = tracker.findTeamIndexById(2);
+    if (targetIdx != -1) {
+        cout << "Located structural data position index: " << targetIdx << "\n";
     }
 
-    tracker.assignRanks();
+    // Algorithm #7: Prefix Sum Array
+    cout << "\n--- Algorithm #7: Cumulative Goals Prefix Sum Array ---\n";
+    auto sumArray = tracker.buildGoalsPrefixSum();
+    for (int value : sumArray) cout << value << " ";
+    cout << "\n";
 
-    tracker.getTeams().clear();
-    // Add teams out of order by ID
-    tracker.addTeam(45, "Arsenal");
-    tracker.addTeam(12, "Chelsea");
-    tracker.addTeam(89, "Man City");
-    tracker.addTeam(23, "Liverpool");
+    // Algorithm #8: Kadane's Maximum Goals Window
+    cout << "\n--- Algorithm #8: Kadane's Maximum Goals Window ---\n";
+    cout << "Maximum sequential match window goals: " << tracker.maxGoalsWindow() << "\n";
 
-    int search_id = 23;
-    int index = tracker.findTeamById(search_id);
+    // Algorithm #9: Sliding Window Rolling Form
+    cout << "\n--- Algorithm #9: Sliding Window Rolling Form ---\n";
+    vector<int> historicalFormPoints = {3, 1, 3, 0, 3, 1, 0};
+    tracker.printRollingForm(historicalFormPoints, 3);
 
-    cout << "--- Binary Search ID Lookup ---\n";
-    if (index != -1) {
-        cout << "Found Team! Name: " << tracker.getTeams()[index].getName() 
-                  << " | ID: " << tracker.getTeams()[index].getId() 
-                  << " | Points: " << tracker.getTeams()[index].getPoints() << "\n";
-    } else {
-        cout << "Team with ID " << search_id << " not found.\n";
+    // Algorithm #10: Interval Merging
+    cout << "\n--- Algorithm #10: Interval Merging ---\n";
+    auto uniqueBlocks = tracker.mergeMatchSchedules();
+    for (const auto& block : uniqueBlocks) {
+        cout << "[" << block.first << " -> " << block.second << "] ";
     }
+    cout << "\n";
 
-    tracker.getTeams().clear();
-    
-    tracker.addTeam(1, "Invincibles FC");
-    tracker.addTeam(2, "Relegation United");
-    tracker.addTeam(3, "Solid Crew FC");
-    tracker.addTeam(4, "Lucky Drawers");
+    // Algorithm #11: Count Unbeaten Teams
+    cout << "\n--- Algorithm #11: Count Unbeaten Teams ---\n";
+    cout << "Total Unbeaten Teams remaining: " << tracker.countUnbeatenTeams() << "\n";
 
-    // Set stats and elimination status
-    for (auto& t : tracker.getTeams()) {
-        if (t.getId() == 1) t.updateStats(10, 0, 'W');
-        if (t.getId() == 2) { t.updateStats(0, 0, 'L'); t.setEliminated(true); }
-        if (t.getId() == 3) t.updateStats(6, 0, 'W');
-        if (t.getId() == 4) t.updateStats(4, 0, 'D');
-    }
+    // Algorithm #12: Goal Difference Sort
+    cout << "\n--- Algorithm #12: Goal Difference Sort ---\n";
+    tracker.sortByGoalDifference();
+    printLeaderboardState(tracker.getTeams());
 
-    cout << "\n--- Initial Team List ---\n";
-    printActiveTeams(tracker.getTeams());
+    // Algorithm #13: Highest Goal Scorer
+    cout << "\n--- Algorithm #13: Highest Goal Scorer ---\n";
+    Team championScorer = tracker.highestGoalScorer();
+    cout << "Most clinical group: " << championScorer.getName() << "\n";
 
-    int unbeatenCount = tracker.countUnbeaten();
-    cout << "\n Total Unbeaten Teams: " << unbeatenCount << endl;
+    // Algorithm #14: Remove Eliminated Teams
+    cout << "\n--- Algorithm #14: Remove Eliminated Teams ---\n";
+    tracker.flagTeamElimination(1, true);
+    tracker.purgeEliminatedTeams();
+    printLeaderboardState(tracker.getTeams());
 
-    // Test Algorithm #14
-    cout << "\n Removing Eliminated Teams...\n";
-    tracker.removeEliminated();
+    // Algorithm #15: Two-Pointer Goal Pairs
+    cout << "\n--- Algorithm #15: Two-Pointer Goal Pairs ---\n";
+    tracker.findPairsWithGoalTarget(5);
 
-    cout << "\n--- Final Active Team List ---\n";
-    printActiveTeams(tracker.getTeams()); 
-
-    tracker.getTeams().clear();
-    
-    tracker.addTeam(2, "Team Beta");
-    tracker.addTeam(1, "Team Alpha");
-    tracker.addTeam(3, "Team Gamma");
-
-    // Set stats
-    for (auto& t : tracker.getTeams()) {
-        if (t.getId() == 1) t.updateStats(15, 5, 'W');
-        if (t.getId() == 2) t.updateStats(20, 18, 'W');
-        if (t.getId() == 3) t.updateStats(5, 12, 'L');
-    }
-
-    cout << "\n--- Before Goal Difference Sort ---\n";
-    for (const auto& team : tracker.getTeams()) {
-        cout << team.getName() << " (GD: " << team.getGoalDifference() << ")\n";
-    }
-
-    tracker.goalDifferenceSort();
-
-    cout << "\n--- After Goal Difference Sort ---\n";
-    for (const auto& team : tracker.getTeams()) {
-        cout << team.getName() << " (GD: " << team.getGoalDifference() << ")\n";
-    }
-
-    vector<pair<int, int>> match_slots = {{10, 12}, {11, 13}, {14, 15}, {9, 10}};
-
-    cout << "\n--- Merging Match Schedule Slots ---\n";
-    vector<pair<int, int>> clean_schedule = tracker.mergeIntervals(match_slots);
-
-    for (const auto& slot : clean_schedule) {
-        cout << "Occupied Broadcast Window: [" << slot.first << " -> " << slot.second << "]\n";
-    }
-
-    tracker.getTeams().clear();
-    
-    tracker.addTeam(1, "Real Madrid");
-    tracker.addTeam(2, "Man City");
-    tracker.addTeam(3, "Bayern");
-
-    // Set stats
-    for (auto& t : tracker.getTeams()) {
-        if (t.getId() == 1) t.updateStats(14, 5, 'W');
-        if (t.getId() == 2) t.updateStats(22, 8, 'W');
-        if (t.getId() == 3) t.updateStats(11, 9, 'L');
-    }
-
-    Team topScorer = tracker.highestGoalScorer();
-
-    cout << "\n--- Golden Boot Team Award ---\n";
-    cout << "Highest Scoring Team: " << topScorer.getName() 
-              << " with " << topScorer.getGoalsFor() << " goals scored!\n";
-
-    cout << "\n--- Prefix Sum of Goals ---\n";
-    vector<int> prefix = tracker.buildPrefixGoals();
-
-    for(int x : prefix){
-        cout << x << " ";
-    }
-    cout << endl;
-
-    cout << "\n--- Maximum Goal Window (Kadane) ---\n";
-    cout << "Maximum Goals = " << tracker.maxGoalWindow() << endl;
-
-    cout << "\n--- Sliding Window Rolling Form ---\n";
-    vector<int> formPoints = {3,3,1,0,3,1,3};
-
-    cout << "Best Form = "
-         << tracker.rollingForm(formPoints, 5)
-         << endl;
-
-    cout << "\n--- Two Pointer Goal Pairs ---\n";
-    vector<int> goalArray = {1,2,3,4,5,6};
-
-    tracker.findGoalPairs(goalArray, 8);
-    
     return 0;
 }
-
-
-

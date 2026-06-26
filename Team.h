@@ -17,6 +17,10 @@ private:
     bool eliminated;
 
 public:
+    Team() 
+        : id(-1), name(""), points(0), goals_for(0), goals_against(0), 
+          wins(0), draws(0), losses(0), eliminated(false) {}
+
     Team(int id, string name) 
         : id(id), name(name), points(0), goals_for(0), goals_against(0), 
           wins(0), draws(0), losses(0), eliminated(false) {}
