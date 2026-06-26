@@ -240,7 +240,7 @@ public:
 
     // System Utilities
     vector<Team>& getTeams() { return teams; }
-    const vector<Match>& getMatches() const { return matches; }
+    vector<Match>& getMatches() { return matches; }
 };
 
 #endif
