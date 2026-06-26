@@ -94,7 +94,7 @@ public:
         priority_queue<pair<int, string>> pq;
         for (const auto& team : teams) pq.push({team.getPoints(), team.getName()});
 
-        cout << "\n🏆 Top " << k << " Teams Leaderboard:\n";
+        cout << "\nTop " << k << " Teams Leaderboard:\n";
         int count = 0;
         while (!pq.empty() && count < k) {
             cout << count + 1 << ". " << pq.top().second << " - " << pq.top().first << " pts\n";
@@ -115,16 +115,16 @@ public:
 
     // Algorithm #6: Binary Search (Operates on Local Copy to avoid breaking standings display) — O(log n) 
     int findTeamIndexById(int target_id) const {
-        vector<Team> sorted_copy = teams;
-        sort(sorted_copy.begin(), sorted_copy.end(), compareByTeamId);
+        vector<Team> t = teams;
+        sort(t.begin(), t.end(), compareByTeamId);
 
-        int low = 0, high = sorted_copy.size() - 1;
+        int low = 0, high = t.size() - 1;
         while (low <= high) {
             int mid = low + (high - low) / 2;
-            if (sorted_copy[mid].getId() == target_id) {
+            if (t[mid].getId() == target_id) {
                 return target_id; // Direct indexing: team_id = vector index
             }
-            if (sorted_copy[mid].getId() < target_id) low = mid + 1;
+            if (t[mid].getId() < target_id) low = mid + 1;
             else high = mid - 1;
         }
         return -1;
@@ -133,7 +133,7 @@ public:
     // Algorithm #7: Prefix Sum Array — O(n) Build, O(1) Range Queries
     vector<int> buildGoalsPrefixSum() const {
         vector<int> prefix(matches.size() + 1, 0);
-        for (size_t i = 0; i < matches.size(); ++i) {
+        for (int i = 0; i < matches.size(); i++) {
             prefix[i + 1] = prefix[i] + (matches[i].getHomeGoals() + matches[i].getAwayGoals());
         }
         return prefix;
@@ -145,7 +145,7 @@ public:
         int max_sum = matches[0].getHomeGoals() + matches[0].getAwayGoals();
         int curr_sum = max_sum;
 
-        for (size_t i = 1; i < matches.size(); i++) {
+        for (int i = 1; i < matches.size(); i++) {
             int current_goals = matches[i].getHomeGoals() + matches[i].getAwayGoals();
             curr_sum = max(current_goals, curr_sum + current_goals);
             max_sum = max(max_sum, curr_sum);
@@ -155,12 +155,12 @@ public:
 
     // Algorithm #9: Sliding Window Rolling Form Engine — O(n) 
     void printRollingForm(const vector<int>& points_history, int k) const {
-        if (points_history.size() < static_cast<size_t>(k)) return;
+        if (points_history.size() < k) return;
         int window_sum = 0;
         for (int i = 0; i < k; i++) window_sum += points_history[i];
         cout << "Form [0-" << k-1 << "]: " << window_sum << " pts\n";
 
-        for (size_t i = k; i < points_history.size(); i++) {
+        for (int i = k; i < points_history.size(); i++) {
             window_sum += points_history[i] - points_history[i - k];
             cout << "Form [" << i-k+1 << "-" << i << "]: " << window_sum << " pts\n";
         }
@@ -176,7 +176,7 @@ public:
         vector<pair<int, int>> merged;
         merged.push_back(slots[0]);
 
-        for (size_t i = 1; i < slots.size(); i++) {
+        for (int i = 1; i < slots.size(); i++) {
             if (slots[i].first <= merged.back().second) {
                 merged.back().second = max(merged.back().second, slots[i].second);
             } else {

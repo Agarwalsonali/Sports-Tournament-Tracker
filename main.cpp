@@ -48,7 +48,7 @@ int main() {
     tracker.categorizeMatchResults();
 
     // Algorithm #6: Binary Search
-    cout << "\n--- Algorithm #6: Binary Search Check (Targeting Team ID 2) ---\n";
+    cout << "\n--- Algorithm #6: Binary Search ---\n";
     int targetIdx = tracker.findTeamIndexById(2);
     if (targetIdx != -1) {
         cout << "Located structural data position index: " << targetIdx << "\n";
@@ -66,8 +66,8 @@ int main() {
 
     // Algorithm #9: Sliding Window Rolling Form
     cout << "\n--- Algorithm #9: Sliding Window Rolling Form ---\n";
-    vector<int> historicalFormPoints = {3, 1, 3, 0, 3, 1, 0};
-    tracker.printRollingForm(historicalFormPoints, 3);
+    vector<int> formPoints = {3, 1, 3, 0, 3, 1, 0};
+    tracker.printRollingForm(formPoints, 3);
 
     // Algorithm #10: Interval Merging
     cout << "\n--- Algorithm #10: Interval Merging ---\n";
